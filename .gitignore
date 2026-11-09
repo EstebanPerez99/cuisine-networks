@@ -1,0 +1,13 @@
+# Data (too large for GitHub; download with scripts/download_data.sh)
+data/
+
+# Python / Jupyter
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+
+# Credentials
+kaggle.json
