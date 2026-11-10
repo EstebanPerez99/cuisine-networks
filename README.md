@@ -33,21 +33,7 @@ The other commands are the same. Run `scripts/download_data.sh` from Git Bash or
 
 ### Get the data
 
-1. **Get a Kaggle API token.** Log in at [kaggle.com](https://www.kaggle.com), go to **Settings → API → Create New Token**. This downloads a file called `kaggle.json`. (Newer versions of the page may call this button *Create Legacy API Key*. The script needs the `kaggle.json` file.)
-2. **Save it as `~/.kaggle/kaggle.json`** and make it private:
-   ```bash
-   mkdir -p ~/.kaggle
-   mv ~/Downloads/kaggle.json ~/.kaggle/kaggle.json
-   chmod 600 ~/.kaggle/kaggle.json
-   ```
-3. **Download the dataset** into `data/raw/`:
-   ```bash
-   scripts/download_data.sh          # RAW_recipes.csv + RAW_interactions.csv (~645 MB)
-   scripts/download_data.sh --all    # the full Kaggle dataset, including ingr_map.pkl (~900 MB)
-   ```
-   The script stops with an explanation if `~/.kaggle/kaggle.json` is missing.
-
-   Without the Kaggle CLI, you can download the files from the Kaggle page in a browser and put them in `data/raw/`.
+You can download the files from our one drive folder and put it in `data/raw/`.
 
 ### Run the notebooks
 
@@ -92,4 +78,4 @@ jupyter nbconvert --to notebook --execute --inplace notebooks/01_initial_eda.ipy
 
 ## Data is never committed
 
-`data/` is listed in `.gitignore`. The CSV files are too large for GitHub, and everyone can download them with the script above. Do not commit data files or your `kaggle.json`; `.gitignore` excludes `kaggle.json` too, but keep the token in `~/.kaggle/`, outside the repository.
+`data/` is listed in `.gitignore`. The CSV files are too large for GitHub.
