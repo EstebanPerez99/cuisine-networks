@@ -1,5 +1,11 @@
-# Data (too large for GitHub; download with scripts/download_data.sh)
-data/
+# Data: raw files are too large for GitHub. Only the final project datasets are committed.
+data/*
+!data/processed/
+data/processed/*
+!data/processed/recipes.csv
+!data/processed/reviews.csv
+!data/processed/recipes_mini.csv
+!data/processed/reviews_mini.csv
 
 # Python / Jupyter
 .venv/

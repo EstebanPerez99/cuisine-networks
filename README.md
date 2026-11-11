@@ -54,11 +54,12 @@ jupyter nbconvert --to notebook --execute --inplace notebooks/01_initial_eda.ipy
 
 ```
 .
-├── data/                 # NOT in git (see .gitignore)
-│   ├── raw/              # original Kaggle files, never modified
-│   └── processed/        # files produced by the notebooks (e.g. recipe_cuisines.csv)
+├── data/
+│   ├── raw/              # original Kaggle files, never modified (NOT in git)
+│   └── processed/        # project datasets built by notebook 02 (in git, see below)
 ├── notebooks/            # Jupyter notebooks, numbered in order
-│   └── 01_initial_eda.ipynb
+│   ├── 01_initial_eda.ipynb
+│   └── 02_build_datasets.ipynb
 ├── src/                  # reusable Python code shared by notebooks
 ├── scripts/
 │   └── download_data.sh  # downloads the dataset from Kaggle into data/raw/
@@ -76,6 +77,41 @@ jupyter nbconvert --to notebook --execute --inplace notebooks/01_initial_eda.ipy
 
 `scripts/download_data.sh --all` also downloads the authors' preprocessed files (`PP_recipes.csv`, `PP_users.csv`, `interactions_{train,validation,test}.csv`) and `ingr_map.pkl`, which maps raw ingredient strings to canonical ingredients.
 
-## Data is never committed
+## Project datasets (`data/processed/`)
 
-`data/` is listed in `.gitignore`. The CSV files are too large for GitHub.
+These four files are committed to the repository, so you get them with `git clone`; you don't need the raw files to use them. `notebooks/02_build_datasets.ipynb` rebuilds them from the raw files (about 1 minute).
+
+| File | Rows | Size | Content |
+|---|---|---|---|
+| `recipes.csv` | 26,727 | 32 MB | All recipes in one of 9 cuisines: italian, mexican, indian, french, greek, middle-eastern, chinese, thai, japanese |
+| `reviews.csv` | 132,744 | 43 MB | The cleaned reviews of exactly those recipes |
+| `recipes_mini.csv` | 8,019 | 10 MB | A random 30% of the recipes of each cuisine (seed 42) |
+| `reviews_mini.csv` | 38,178 | 12 MB | The reviews of the mini recipes |
+
+**Recipes columns:** `recipe_id`, `name`, `cuisine` (exactly one per recipe, no sub-cuisines: a `szechuan` recipe is `chinese`), `ingredients` (JSON list of raw ingredient strings, **not normalised yet**), `n_ingredients`, `steps` (JSON list), `n_steps`, `description`, `minutes`, `submitted`, `contributor_id`, `n_reviews`, `calories`, `total_fat_pdv`, `sugar_pdv`, `sodium_pdv`, `protein_pdv`, `sat_fat_pdv`, `carbs_pdv`.
+
+**Reviews columns:** `review_id` (row number in `RAW_interactions.csv`), `recipe_id`, `cuisine`, `user_id`, `date`, `rating` (1–5, empty if no stars were given), `review`.
+
+**Cleaning applied:**
+- Recipes in two of the 9 cuisines are dropped.
+- Recipes with fewer than 2 ingredients are dropped, and so are duplicate recipes.
+- Implausible `minutes` and nutrition values are set to empty; the recipe is kept.
+- Reviews written for community games are dropped (Zaar World Tour, Pick A Chef, Recipe Swap, Tag games, …).
+- Replies by the recipe's author and reviews without text are dropped.
+
+Loading:
+
+```python
+import json
+import pandas as pd
+
+recipes = pd.read_csv("data/processed/recipes.csv", parse_dates=["submitted"])
+recipes["ingredients"] = recipes["ingredients"].map(json.loads)
+recipes["steps"] = recipes["steps"].map(json.loads)
+reviews = pd.read_csv("data/processed/reviews.csv", parse_dates=["date"])
+reviews["rating"] = reviews["rating"].astype("Int64")
+```
+
+## Raw data is never committed
+
+`data/raw/` and any other generated file in `data/` are excluded in `.gitignore`. The raw CSV files are too large for GitHub. Only the four project datasets above are committed.
