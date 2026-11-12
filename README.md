@@ -83,19 +83,19 @@ These four files are committed to the repository, so you get them with `git clon
 
 | File | Rows | Size | Content |
 |---|---|---|---|
-| `recipes.csv` | 26,727 | 32 MB | All recipes in one of 9 cuisines: italian, mexican, indian, french, greek, middle-eastern, chinese, thai, japanese |
+| `recipes.csv` | 26,727 | 31 MB | All recipes in one of 9 cuisines: italian, mexican, indian, french, greek, middle-eastern, chinese, thai, japanese |
 | `reviews.csv` | 132,744 | 43 MB | The cleaned reviews of exactly those recipes |
-| `recipes_mini.csv` | 8,019 | 10 MB | A random 30% of the recipes of each cuisine (seed 42) |
+| `recipes_mini.csv` | 8,019 | 9 MB | A random 30% of the recipes of each cuisine (seed 42) |
 | `reviews_mini.csv` | 38,178 | 12 MB | The reviews of the mini recipes |
 
-**Recipes columns:** `recipe_id`, `name`, `cuisine` (exactly one per recipe, no sub-cuisines: a `szechuan` recipe is `chinese`), `ingredients` (JSON list of raw ingredient strings, **not normalised yet**), `n_ingredients`, `steps` (JSON list), `n_steps`, `description`, `minutes`, `submitted`, `contributor_id`, `n_reviews`, `calories`, `total_fat_pdv`, `sugar_pdv`, `sodium_pdv`, `protein_pdv`, `sat_fat_pdv`, `carbs_pdv`.
+**Recipes columns:** `recipe_id`, `name`, `cuisine` (exactly one per recipe, no sub-cuisines: a `szechuan` recipe is `chinese`), `ingredients` (JSON list of raw ingredient strings, **not normalised yet**), `n_ingredients`, `steps` (JSON list), `n_steps`, `description`, `minutes`, `submitted`, `contributor_id`, `n_reviews`.
 
 **Reviews columns:** `review_id` (row number in `RAW_interactions.csv`), `recipe_id`, `cuisine`, `user_id`, `date`, `rating` (1–5, empty if no stars were given), `review`.
 
 **Cleaning applied:**
 - Recipes in two of the 9 cuisines are dropped.
 - Recipes with fewer than 2 ingredients are dropped, and so are duplicate recipes.
-- Implausible `minutes` and nutrition values are set to empty; the recipe is kept.
+- Implausible `minutes` values (0, or above about 19 hours) are set to empty; the recipe is kept.
 - Reviews written for community games are dropped (Zaar World Tour, Pick A Chef, Recipe Swap, Tag games, …).
 - Replies by the recipe's author and reviews without text are dropped.
 
@@ -110,7 +110,13 @@ recipes["ingredients"] = recipes["ingredients"].map(json.loads)
 recipes["steps"] = recipes["steps"].map(json.loads)
 reviews = pd.read_csv("data/processed/reviews.csv", parse_dates=["date"])
 reviews["rating"] = reviews["rating"].astype("Int64")
+
+# Only some cuisines, e.g. Mexican, Japanese and Italian
+my_recipes = recipes[recipes["cuisine"].isin(["mexican", "japanese", "italian"])]
+my_reviews = reviews[reviews["recipe_id"].isin(my_recipes["recipe_id"])]
 ```
+
+Section 8 of `notebooks/02_build_datasets.ipynb` has the same code as a ready-to-copy `load()` and `keep_cuisines()`.
 
 ## Raw data is never committed
 
