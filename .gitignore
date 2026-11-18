@@ -17,3 +17,14 @@ __pycache__/
 
 # Credentials
 kaggle.json
+
+# LaTeX build output (report/)
+report/build/
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.synctex.gz
+*.fls
+*.fdb_latexmk

@@ -1,0 +1,55 @@
+% Results. The figures carry the story; put each check next to the claim
+% it supports. Three good figures beat eight.
+
+\section*{Results}
+
+\subsection*{Nine cuisines, one label each}
+
+Table~\ref{tab:data} summarises the dataset. TODO: first result.
+
+\begin{table}[tbhp]
+\centering
+\caption{The nine cuisines in the processed dataset. Each recipe has exactly one cuisine label. Ingredient strings are not normalised yet, so the last column is an upper bound.}
+\label{tab:data}
+\begin{tabular}{lrrr}
+Cuisine & Recipes & Reviews & Ingredient strings \\
+\midrule
+Italian        & 7,218 & 40,272 & 3,657 \\
+Mexican        & 6,657 & 36,868 & 3,456 \\
+Indian         & 2,657 &  9,334 & 2,024 \\
+French         & 2,186 &  8,347 & 2,383 \\
+Greek          & 2,182 & 10,830 & 1,907 \\
+Middle Eastern & 1,939 &  7,064 & 1,826 \\
+Chinese        & 1,927 & 10,966 & 1,810 \\
+Thai           & 1,172 &  4,922 & 1,428 \\
+Japanese       &   789 &  4,141 & 1,125 \\
+\midrule
+Total          & 26,727 & 132,744 & 7,296 \\
+\bottomrule
+\end{tabular}
+
+\addtabletext{The total of the last column counts distinct strings over all cuisines.}
+\end{table}
+
+\subsection*{TODO: second result}
+
+Fig.~\ref{fig:placeholder} shows how a column-wide figure is inserted. Replace it.
+
+\begin{figure}[tbhp]
+\centering
+\includegraphics[width=\linewidth]{figures/placeholder.png}
+\caption{PLACEHOLDER (exploratory figure). A good caption says what is plotted, what it is compared against (the null or baseline), and what the reader should see.}
+\label{fig:placeholder}
+\end{figure}
+
+% A figure that spans both columns:
+% \begin{figure*}[t!]
+% \centering
+% \includegraphics[width=17.8cm]{figures/xxx.pdf}
+% \caption{...}
+% \label{fig:xxx}
+% \end{figure*}
+
+\subsection*{TODO: third result}
+
+TODO.

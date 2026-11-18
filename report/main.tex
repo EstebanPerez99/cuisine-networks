@@ -1,0 +1,88 @@
+% =====================================================================
+%  Final report, 02805 Social Graphs and Interactions (DTU)
+%  PNAS research-article template (pnas-new.cls v1.47).
+%
+%  Course rules (week 8):
+%   - at most 6 pages INCLUDING figures and references
+%   - Abstract, Significance, Introduction, Results, Discussion,
+%     Methods, References, specific author contributions
+%   - three good figures beat eight; every caption says what is
+%     plotted, what it is compared against, and what to see
+%
+%  Build: `make` in this folder (or see report/README.md).
+%  Text lives in sections/*.tex, one file per section, so that we
+%  can edit in parallel without merge conflicts.
+% =====================================================================
+\documentclass[9pt,twocolumn,twoside]{pnas-new}
+% Line numbers in the margins are part of this template version (v1.47).
+
+\articletype{Social Sciences}  % classification shown on top of page 1
+
+\templatetype{pnasresearcharticle}
+
+% Local builds use Tectonic (XeTeX), which has no Type 1 Helvetica.
+% TeX Gyre Heros is a Helvetica clone, so the PDF matches Overleaf
+% (pdfLaTeX), where this block is skipped.
+\ifxetex
+  \usepackage{fontspec}
+  \setsansfont{texgyreheros}[
+    Extension=.otf, UprightFont=*-regular, BoldFont=*-bold,
+    ItalicFont=*-italic, BoldItalicFont=*-bolditalic]
+\fi
+
+\begin{document}
+
+% TODO: final title once the research question is fixed.
+\title{Cuisines through ingredients and words}
+
+\author[a]{Esteban Perez}
+\author[a]{Author Two}
+\author[a]{Author Three}
+
+\affil[a]{DTU Compute, Technical University of Denmark, 2800 Kongens Lyngby, Denmark}
+
+\leadauthor{Perez}
+
+% 50--120 words, for a reader outside the field.
+\significancestatement{\input{sections/significance}}
+
+% The course asks for SPECIFIC contributions: who did what.
+\authorcontributions{\input{sections/contributions}}
+\authordeclaration{The authors declare no competing interests.}
+\correspondingauthor{E-mail: TODO@student.dtu.dk}
+
+\keywords{ingredient networks $|$ cuisines $|$ authenticity $|$ text analysis $|$ online reviews}
+
+\begin{abstract}
+\input{sections/abstract}
+\end{abstract}
+
+\dates{This manuscript was compiled on \today}
+
+\maketitle
+\thispagestyle{firststyle}
+\ifthenelse{\boolean{shortarticle}}{\ifthenelse{\boolean{singlecolumn}}{\abscontentformatted}{\abscontent}}{}
+
+\Firstpage
+% Introduction: no heading (PNAS style).
+\input{sections/introduction}
+
+\input{sections/results}
+
+\input{sections/discussion}
+
+\matmethods{\input{sections/methods}}
+\showmatmethods{}
+
+\dataavail{Code, notebooks and the processed datasets are available at \url{https://github.com/TODO/sgi-project}. The raw data are the Food.com Recipes and Interactions dataset \cite{majumder2019generating}.}
+
+\acknow{We thank the teaching team of 02805 Social Graphs and Interactions.}
+\showacknow{}
+
+% Number of references placed in the left column of the last page.
+% Adjust once the reference list is final.
+\bibsplit[3]
+
+\bibliography{references}
+
+\end{document}

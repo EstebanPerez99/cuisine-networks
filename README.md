@@ -64,6 +64,7 @@ jupyter nbconvert --to notebook --execute --inplace notebooks/01_initial_eda.ipy
 ├── scripts/
 │   └── download_data.sh  # downloads the dataset from Kaggle into data/raw/
 ├── figures/              # PNG figures saved by the notebooks
+├── report/               # final paper in LaTeX (PNAS template, see report/README.md)
 ├── requirements.txt      # pinned Python dependencies
 └── README.md
 ```

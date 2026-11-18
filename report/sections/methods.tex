@@ -1,0 +1,11 @@
+% Methods: enough detail to reproduce every number. This is the argument
+% of \matmethods{} in main.tex, so it may contain subsections and equations.
+
+\subsection*{Data}
+We use the Food.com Recipes and Interactions dataset \cite{majumder2019generating}: 231,637 recipes submitted between 1999 and 2018 and 1,132,367 user reviews. Each recipe has user-assigned tags. We keep recipes tagged with exactly one of nine cuisines (Italian, Mexican, Indian, French, Greek, Middle Eastern, Chinese, Thai, Japanese). We map regional sub-tags to their cuisine (for example, \emph{szechuan} to Chinese), and we drop the 431 recipes tagged with two of the nine. We drop recipes with fewer than two ingredients and exact duplicates (same name and ingredient set). We treat preparation times of 0 minutes and above a Tukey fence on $\log_{10}$(minutes) ($k=3$, about 19 hours) as missing. From the reviews, we drop reviews written for community cooking games on the site (12,981), replies by the recipe's author (107) and reviews without text (18). We treat a rating of 0 as \emph{no rating}, because it most likely means that no stars were given. The result is 26,727 recipes and 132,744 reviews (Table~\ref{tab:data}).
+
+\subsection*{Ingredient networks}
+TODO: bipartite recipe--ingredient network, projection, backbone \cite{serrano2009extracting}, community detection \cite{blondel2008fast,newman2006modularity}, null model.
+
+\subsection*{Text analysis}
+TODO: how ``authentic'' and substitution phrases are detected, and the hand-labelled validation sample.
