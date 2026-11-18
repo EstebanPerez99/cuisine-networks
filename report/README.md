@@ -46,6 +46,7 @@ It compiles with the default pdfLaTeX. Overleaf does not sync with this repo aut
 
 ## Layout notes
 
+- Line numbers in the margins are part of the course template, so they stay on. To preview the paper without them, set `\showlinenumbersfalse` near the top of `main.tex`, and set it back before handing in.
 - On page 1, the text column is narrower because of the Significance box. `\Endparasplit` at the end of `sections/introduction.tex` marks where that narrow column ends. Move it once the introduction is final. Use `\Parasplit` if the page break falls in the middle of a paragraph.
 - `\bibsplit[3]` in `main.tex` sets how many references go in the left column of the last page. Adjust it at the end.
 - Column-wide figures are 8.7 cm wide (`figure`), and page-wide figures are 17.8 cm (`figure*`). Export figures from matplotlib at their final size so that the text in them is 6–12 pt.

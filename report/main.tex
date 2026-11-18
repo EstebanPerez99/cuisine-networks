@@ -14,7 +14,11 @@
 %  can edit in parallel without merge conflicts.
 % =====================================================================
 \documentclass[9pt,twocolumn,twoside]{pnas-new}
-% Line numbers in the margins are part of this template version (v1.47).
+
+% Line numbers in the margins help reviewers point at a line.
+% true = numbered, as in the course template; false = clean preview.
+\newif\ifshowlinenumbers
+\showlinenumberstrue
 
 \articletype{Social Sciences}  % classification shown on top of page 1
 
@@ -28,6 +32,14 @@
   \setsansfont{texgyreheros}[
     Extension=.otf, UprightFont=*-regular, BoldFont=*-bold,
     ItalicFont=*-italic, BoldItalicFont=*-bolditalic]
+\fi
+
+\ifshowlinenumbers\else
+  \makeatletter
+  \def\PNAS@mk@linecount{\savebox{\PNAS@linecount@bx}{}}
+  \def\PNAS@mk@linecountsecpage{\savebox{\PNAS@linecount@bxsecpage}{}}
+  \g@addto@macro\ps@firststyle{\fancyhead{}}  % first page has its own style
+  \makeatother
 \fi
 
 \begin{document}
