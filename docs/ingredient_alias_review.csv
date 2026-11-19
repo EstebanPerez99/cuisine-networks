@@ -1,0 +1,93 @@
+decision,ingredient_name,canonical_name,recipe_count,count_basis
+alias,garlic cloves,garlic,5630,raw recipe count
+alias,tomatoes,tomato,2978,raw recipe count
+alias,eggs,egg,2609,raw recipe count
+alias,garlic clove,garlic,1869,raw recipe count
+alias,extra virgin olive oil,olive oil,1806,raw recipe count
+alias,ground cumin,cumin,1692,raw recipe count
+alias,onions,onion,1601,raw recipe count
+alias,fresh cilantro,cilantro,1434,raw recipe count
+alias,fresh ground black pepper,black pepper,1231,raw recipe count
+alias,fresh parsley,parsley,1161,raw recipe count
+alias,all-purpose flour,flour,1144,raw recipe count
+alias,fresh ginger,ginger,1096,raw recipe count
+alias,green onions,green onion,953,raw recipe count
+alias,fresh basil,basil,893,raw recipe count
+alias,chicken stock,chicken broth,823,raw recipe count
+alias,carrots,carrot,780,raw recipe count
+alias,unsalted butter,butter,770,raw recipe count
+alias,green chilies,green chili,738,raw recipe count
+alias,flour tortillas,flour tortilla,717,raw recipe count
+alias,fresh lemon juice,lemon juice,709,raw recipe count
+alias,boneless skinless chicken breasts,boneless skinless chicken breast,665,raw recipe count
+alias,potatoes,potato,646,raw recipe count
+alias,ground cinnamon,cinnamon,629,raw recipe count
+alias,red pepper flakes,crushed red pepper flakes,589,raw recipe count
+alias,corn tortillas,corn tortilla,556,raw recipe count
+alias,fresh lime juice,lime juice,550,raw recipe count
+alias,ground black pepper,black pepper,545,raw recipe count
+alias,scallions,green onion,537,raw recipe count
+alias,chicken breasts,chicken breast,503,raw recipe count
+alias,bay leaves,bay leaf,437,raw recipe count
+alias,shallots,shallot,416,raw recipe count
+alias,"lemon, juice of",lemon juice,414,raw recipe count
+alias,gingerroot,ginger,365,raw recipe count
+alias,mushrooms,mushroom,365,raw recipe count
+alias,egg yolks,egg yolk,345,raw recipe count
+alias,scallion,green onion,333,raw recipe count
+alias,jalapeno pepper,jalapeno,312,raw recipe count
+alias,turmeric powder,turmeric,304,raw recipe count
+alias,ground turmeric,turmeric,291,raw recipe count
+alias,avocados,avocado,271,raw recipe count
+alias,"lime, juice of",lime juice,270,raw recipe count
+alias,roma tomatoes,roma tomato,266,raw recipe count
+alias,boneless skinless chicken breast halves,boneless skinless chicken breast,259,raw recipe count
+alias,basil leaves,basil,255,raw recipe count
+alias,vegetable stock,vegetable broth,253,raw recipe count
+alias,egg whites,egg white,236,raw recipe count
+alias,eggplants,eggplant,235,raw recipe count
+alias,fresh mushrooms,mushroom,235,raw recipe count
+alias,jalapenos,jalapeno,233,raw recipe count
+alias,taco seasoning mix,taco seasoning,223,raw recipe count
+alias,red bell peppers,red bell pepper,207,raw recipe count
+alias,fresh basil leaves,basil,204,raw recipe count
+alias,ground nutmeg,nutmeg,196,raw recipe count
+alias,red onions,red onion,195,raw recipe count
+alias,jalapeno peppers,jalapeno,194,raw recipe count
+alias,fresh cilantro leaves,cilantro,179,raw recipe count
+alias,lemons,lemon,175,raw recipe count
+alias,fresh gingerroot,ginger,174,raw recipe count
+alias,fresh garlic,garlic,172,raw recipe count
+alias,spring onions,green onion,168,raw recipe count
+alias,cinnamon sticks,cinnamon stick,166,raw recipe count
+alias,limes,lime,155,raw recipe count
+alias,cucumbers,cucumber,147,raw recipe count
+alias,cumin seeds,cumin seed,132,raw recipe count
+alias,fresh tomatoes,tomato,116,raw recipe count
+alias,green bell peppers,green bell pepper,108,raw recipe count
+alias,yellow onions,yellow onion,106,raw recipe count
+alias,fresh garlic cloves,garlic,76,raw recipe count
+alias,white onions,white onion,71,raw recipe count
+alias,spring onion,green onion,70,raw recipe count
+alias,all purpose flour,flour,0,raw recipe count
+alias,extra-virgin olive oil,olive oil,0,raw recipe count
+excluded_generic,salt,,10565,normalized recipe count
+excluded_generic,water,,4870,normalized recipe count
+excluded_generic,black pepper,,3597,normalized recipe count
+excluded_generic,pepper,,2525,normalized recipe count
+excluded_generic,salt and pepper,,2381,normalized recipe count
+excluded_generic,oil,,1780,normalized recipe count
+excluded_generic,kosher salt,,810,normalized recipe count
+excluded_generic,salt and freshly ground black pepper,,596,normalized recipe count
+excluded_generic,sea salt,,581,normalized recipe count
+excluded_generic,fresh ground pepper,,468,normalized recipe count
+excluded_generic,warm water,,281,normalized recipe count
+excluded_generic,cooking oil,,241,normalized recipe count
+excluded_generic,boiling water,,202,normalized recipe count
+excluded_generic,cold water,,196,normalized recipe count
+excluded_generic,hot water,,194,normalized recipe count
+excluded_generic,coarse salt,,183,normalized recipe count
+excluded_generic,salt and black pepper,,151,normalized recipe count
+excluded_generic,ground pepper,,115,normalized recipe count
+excluded_generic,salt and fresh ground pepper,,79,normalized recipe count
+excluded_generic,table salt,,50,normalized recipe count

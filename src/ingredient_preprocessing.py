@@ -1,0 +1,61 @@
+"""Ingredient cleaning shared by the network notebook and recipe scores."""
+
+import re
+
+ALIASES = {
+    'garlic clove': 'garlic', 'garlic cloves': 'garlic',
+    'fresh garlic': 'garlic', 'fresh garlic cloves': 'garlic',
+    'onions': 'onion', 'yellow onions': 'yellow onion',
+    'red onions': 'red onion', 'white onions': 'white onion',
+    'tomatoes': 'tomato', 'fresh tomatoes': 'tomato',
+    'roma tomatoes': 'roma tomato',
+    'eggs': 'egg', 'egg yolks': 'egg yolk', 'egg whites': 'egg white',
+    'carrots': 'carrot', 'potatoes': 'potato',
+    'shallots': 'shallot', 'mushrooms': 'mushroom',
+    'fresh mushrooms': 'mushroom', 'cucumbers': 'cucumber',
+    'avocados': 'avocado', 'eggplants': 'eggplant',
+    'lemons': 'lemon', 'limes': 'lime',
+    'bay leaves': 'bay leaf',
+    'red bell peppers': 'red bell pepper', 'green bell peppers': 'green bell pepper',
+    'green chilies': 'green chili',
+    'jalapenos': 'jalapeno', 'jalapeno pepper': 'jalapeno',
+    'jalapeno peppers': 'jalapeno',
+    'boneless skinless chicken breasts': 'boneless skinless chicken breast',
+    'boneless skinless chicken breast halves': 'boneless skinless chicken breast',
+    'chicken breasts': 'chicken breast',
+    'flour tortillas': 'flour tortilla', 'corn tortillas': 'corn tortilla',
+    'cumin seeds': 'cumin seed', 'cinnamon sticks': 'cinnamon stick',
+    'scallion': 'green onion', 'scallions': 'green onion',
+    'green onions': 'green onion', 'spring onion': 'green onion',
+    'spring onions': 'green onion',
+    'fresh cilantro': 'cilantro', 'fresh cilantro leaves': 'cilantro',
+    'fresh parsley': 'parsley',
+    'fresh basil': 'basil', 'basil leaves': 'basil',
+    'fresh basil leaves': 'basil',
+    'fresh ginger': 'ginger', 'gingerroot': 'ginger',
+    'fresh gingerroot': 'ginger',
+    'fresh lemon juice': 'lemon juice', 'lemon, juice of': 'lemon juice',
+    'fresh lime juice': 'lime juice', 'lime, juice of': 'lime juice',
+    'extra virgin olive oil': 'olive oil', 'extra-virgin olive oil': 'olive oil',
+    'unsalted butter': 'butter',
+    'ground cumin': 'cumin', 'ground cinnamon': 'cinnamon',
+    'ground turmeric': 'turmeric', 'turmeric powder': 'turmeric',
+    'ground nutmeg': 'nutmeg',
+    'red pepper flakes': 'crushed red pepper flakes',
+    'fresh ground black pepper': 'black pepper', 'ground black pepper': 'black pepper',
+    'all-purpose flour': 'flour', 'all purpose flour': 'flour',
+    'chicken stock': 'chicken broth',
+    'vegetable stock': 'vegetable broth',
+    'taco seasoning mix': 'taco seasoning',
+}
+GENERIC_INGREDIENTS = {
+    'salt', 'kosher salt', 'sea salt', 'coarse salt', 'table salt',
+    'pepper', 'ground pepper', 'fresh ground pepper', 'black pepper',
+    'salt and pepper', 'salt and black pepper',
+    'salt and freshly ground black pepper', 'salt and fresh ground pepper',
+    'water', 'warm water', 'boiling water', 'cold water', 'hot water',
+    'oil', 'cooking oil',
+}
+def normalize_ingredient(raw):
+    value = re.sub(r'\s+', ' ', str(raw).strip().lower().replace('&', 'and'))
+    return ALIASES.get(value, value)

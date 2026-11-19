@@ -6,6 +6,8 @@ data/processed/*
 !data/processed/reviews.csv
 !data/processed/recipes_mini.csv
 !data/processed/reviews_mini.csv
+!data/processed/network_recipe_distinctiveness_full.csv
+!data/processed/network_pair_signatures_full.csv
 
 # Python / Jupyter
 .venv/
