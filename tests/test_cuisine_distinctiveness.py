@@ -1,7 +1,7 @@
 import math
 import unittest
 
-from src.cuisine_distinctiveness import score_recipes
+from src.cuisine_distinctiveness import pairing_scores, score_recipes
 
 
 class DistinctivenessTests(unittest.TestCase):
@@ -28,6 +28,20 @@ class DistinctivenessTests(unittest.TestCase):
         )
         self.assertEqual(scores.loc[0, "retained_pairs"], 0)
         self.assertTrue(math.isnan(scores.loc[0, "pair_distinctiveness"]))
+
+    def test_pairing_score_compares_observed_with_randomized_cooccurrence(self):
+        # Cuisine A: ingredients 0 and 1 always together in recipes 1-2.
+        # The "randomized" version splits them, so the pair is above chance.
+        rows = [[0, 1], [0, 1], [2, 3], [2, 3]]
+        randomized = [[[0, 2], [1, 3], [0, 3], [1, 2]]]
+        scores, expectation = pairing_scores([1, 2, 3, 4], ["A"] * 4, rows, randomized, 4)
+        self.assertEqual(expectation("A", 0, 1), (2.0, 0.0))
+        # Leave-one-out: observed 2 - 1 = 1, expected 0 -> log2((1 + 1) / (0 + 1)) = 1
+        self.assertAlmostEqual(scores.pairing_score.iloc[0], 1.0)
+
+    def test_pairing_score_rejects_randomizations_that_change_frequencies(self):
+        with self.assertRaises(ValueError):
+            pairing_scores([1, 2], ["A", "A"], [[0, 1], [0, 1]], [[[0, 1], [1, 2]]], 3)
 
 
 if __name__ == "__main__":

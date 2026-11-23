@@ -97,3 +97,71 @@ def score_recipes(recipe_ids, labels, ingredient_rows, ingredient_names, min_pai
         ascending=[True, False, False],
     )
     return pd.DataFrame(result), signatures
+
+
+def pairing_scores(recipe_ids, labels, ingredient_rows, randomized_rows, n_ingredients):
+    """Score how much more often a recipe's ingredient pairs co-occur than chance.
+
+    For each cuisine c and pair (i, j), the expected co-occurrence E is the mean
+    count over `randomized_rows`: randomized versions of `ingredient_rows` that
+    keep every recipe's size and every ingredient's frequency within its
+    cuisine (e.g. Curveball). The pair lift is log2((n_ij + 1) / (E_ij + 1)),
+    positive when the two ingredients are combined more often than their
+    popularity predicts. A recipe's score is the mean lift over its pairs.
+
+    Leave-one-out: the scored recipe is removed from the observed count
+    (n_ij - 1), and E is rescaled by (n_i - 1)(n_j - 1) / (n_i n_j), because
+    the expectation grows with the product of the two ingredient frequencies.
+
+    Returns the per-recipe scores and a function `pair_expectation(c, i, j)`
+    returning (observed, expected) for the full corpus.
+    """
+    from scipy import sparse
+
+    labels = np.asarray(labels)
+    n = len(labels)
+    if len(recipe_ids) != n or len(ingredient_rows) != n:
+        raise ValueError("Recipe IDs, labels, and ingredient rows must align")
+    if not randomized_rows:
+        raise ValueError("At least one randomized matrix is needed")
+
+    def to_matrix(rows, index):
+        r, c = [], []
+        for k, i in enumerate(index):
+            r.extend([k] * len(rows[i]))
+            c.extend(rows[i])
+        return sparse.csr_matrix((np.ones(len(r), dtype=np.float64), (r, c)),
+                                 shape=(len(index), n_ingredients))
+
+    scores = np.full(n, np.nan)
+    observed, expected = {}, {}
+    for cuisine in sorted(set(labels)):
+        index = np.flatnonzero(labels == cuisine)
+        obs = to_matrix(ingredient_rows, index)
+        cooc = (obs.T @ obs).tocsr()
+        exp = None
+        for rows in randomized_rows:
+            rnd = to_matrix(rows, index)
+            if not np.array_equal(np.asarray(rnd.sum(axis=0)).ravel(), np.asarray(obs.sum(axis=0)).ravel()):
+                raise ValueError("Randomized rows must keep ingredient frequencies within each cuisine")
+            term = (rnd.T @ rnd).tocsr()
+            exp = term if exp is None else exp + term
+        exp = (exp / len(randomized_rows)).tocsr()
+        freq = cooc.diagonal()
+        observed[cuisine], expected[cuisine] = cooc, exp
+        for i in index:
+            row = sorted(set(ingredient_rows[i]))
+            if len(row) < 2:
+                continue
+            a, b = np.array(list(combinations(row, 2))).T
+            n_ab = np.asarray(cooc[a, b]).ravel() - 1
+            e_ab = np.asarray(exp[a, b]).ravel()
+            na, nb = freq[a], freq[b]
+            e_ab = e_ab * (na - 1) * (nb - 1) / (na * nb)
+            scores[i] = float(np.mean(np.log2((n_ab + 1) / (e_ab + 1))))
+
+    def pair_expectation(cuisine, i, j):
+        return float(observed[cuisine][i, j]), float(expected[cuisine][i, j])
+
+    result = pd.DataFrame({"recipe_id": np.asarray(recipe_ids), "pairing_score": scores})
+    return result, pair_expectation

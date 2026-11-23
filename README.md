@@ -122,25 +122,28 @@ my_reviews = reviews[reviews["recipe_id"].isin(my_recipes["recipe_id"])]
 
 Section 8 of `notebooks/02_build_datasets.ipynb` has the same code as a ready-to-copy `load()` and `keep_cuisines()`.
 
-`notebooks/03_network_analysis.ipynb` builds a recipe similarity network from conservatively normalized ingredient lists, compares cuisine mixing, pairwise cross-cuisine links, and detected communities to shuffled-label null models, and exports per-recipe metrics to `data/processed/network_recipe_metrics_mini.csv` and cuisine-pair comparisons to `data/processed/network_cuisine_pairs_mini.csv` by default. Its main projection excludes generic seasonings and water, retains ingredients used by up to 35% of recipes, and keeps each recipe's 15 most similar neighbors. It runs on the committed mini dataset without the raw Kaggle files. Set `DATASET = 'full'` in the setup cell to analyze all 26,727 recipes and generate the corresponding `_full.csv` files. The generated metrics files are ignored by Git; rerun the notebook to recreate them.
+## Network analysis (`notebooks/03_network_analysis.ipynb`)
 
-The same notebook first represents recipes and ingredients as a **bipartite network**. Its direct bipartite check measures how concentrated each ingredient's recipe links are across cuisine labels and compares the result with shuffled labels. It also builds the ingredient co-occurrence projection and lists illustrative ingredient pairs. The full-data results, methods, and limits are in [`docs/bipartite_network.md`](docs/bipartite_network.md). The recipe–recipe network studied below is the other projection of that bipartite graph.
+The notebook runs on the full dataset (26,727 recipes). It builds the recipe–ingredient **bipartite network** from lightly normalised ingredient names (`src/ingredient_preprocessing.py`) and scores every recipe with the cuisine-specificity measure of Ahn et al. (2011) (`src/cuisine_distinctiveness.py`, tested in `tests/`):
 
-For an exploratory check of dish-type confounding, the notebook also exports its fixed edge list. With `DATASET = 'full'`, run `scripts/recipe_type_analysis.py` to classify explicit recipe-title types, shuffle cuisine labels within those types, and check the impact of removing the large mixed community. See [`docs/recipe_type_investigation.md`](docs/recipe_type_investigation.md) for results and limitations. The processed project files lack the original non-cuisine Food.com tags, so this title-based analysis remains a conservative pilot.
+- `data/processed/network_recipe_distinctiveness_full.csv` has one row per recipe with three scores: `ingredient_distinctiveness` (*what*), `pair_distinctiveness` (*which pairs*) and `pairing_score` (*how*: are its pairs combined more often than chance? See `docs/recipe_pairing_score.md`). **This is the file to join with the reviews on `recipe_id`.** Rebuild it with `python scripts/recipe_pair_distinctiveness.py`, then `python scripts/recipe_pairing_score.py`.
+- `data/processed/network_pair_signatures_full.csv` lists, for each cuisine, how characteristic every ingredient pair is.
 
-`scripts/ingredient_ablation.py` tests which ingredients support the observed network patterns. It removes selected ingredients one at a time, rebuilds the full recipe network with the same rules, and compares changes with five ingredients of similar recipe frequency. The script verifies that its unmodified network exactly matches the notebook's exported edges. See [`docs/ingredient_ablation.md`](docs/ingredient_ablation.md) for the exploratory results and interpretation limits.
+The notebook also builds a recipe–recipe similarity network and compares it with shuffled cuisine labels and Louvain communities. These checks ask whether ingredients alone separate the cuisines. Its other outputs (edge lists, metrics) are ignored by git; rerun the notebook to recreate them.
 
-`scripts/recipe_ingredient_null.py` tests a stricter recipe–ingredient reference model. It trades ingredients only between recipes of the same cuisine, exactly preserving each recipe's retained-ingredient count and each ingredient's frequency within each cuisine, then rebuilds the recipe network for every randomized matrix. It checks the margins and exact baseline reproduction before reporting cuisine clustering and selected cross-cuisine pair shares. See [`docs/recipe_ingredient_null.md`](docs/recipe_ingredient_null.md) for the results.
+Supporting robustness scripts, each with a write-up in `docs/`:
 
-With the original `RAW_recipes.csv.zip` in `data/raw/`, `scripts/tagged_recipe_null.py` adds Food.com course tags. It assigns a documented primary dish type, trades ingredients only among recipes with the same cuisine and type, and rebuilds the network for 49 randomizations. The archive is not committed. See [`docs/tagged_recipe_null.md`](docs/tagged_recipe_null.md) for the assignment audit, comparison, and limitations.
+| Script | Question | Write-up |
+|---|---|---|
+| `scripts/recipe_ingredient_null.py` | How much cuisine separation remains when ingredient frequencies are preserved? | `docs/recipe_ingredient_null.md` |
+| `scripts/tagged_recipe_null.py` | Same, also preserving dish type. Needs `data/raw/RAW_recipes.csv.zip`. | `docs/tagged_recipe_null.md` |
+| `scripts/recipe_pairing_score.py` | Is each recipe's ingredient combination more frequent than chance? (the *how* score) | `docs/recipe_pairing_score.md` |
+| `scripts/pair_cooccurrence_null.py` | Do the showcased pairs co-occur more than their ingredients' frequencies predict? | `docs/pair_cooccurrence_null.md` |
+| `scripts/recipe_type_analysis.py` | Does dish type (dessert, drink, …) explain the cross-cuisine links? | `docs/recipe_type_investigation.md` |
+| `scripts/ingredient_ablation.py` | Which single ingredients drive the network patterns? | `docs/ingredient_ablation.md` |
+| `scripts/network_residual_sensitivity.py` | Does the result survive removing sweets, drinks and near-duplicates? | `docs/network_residual_sensitivity.md` |
 
-`scripts/pair_cooccurrence_null.py` uses the same cuisine-by-type ingredient-preserving randomization to check the nine ingredient pairs displayed in the report. It finds that some pairs occur together more often than ingredient popularity predicts, while one highly distinctive Italian pair occurs together less often. This distinguishes cross-cuisine prevalence from within-cuisine pairing structure. See [`docs/pair_cooccurrence_null.md`](docs/pair_cooccurrence_null.md) for counts, caveats, and reproduction steps.
-
-`scripts/network_residual_sensitivity.py` repeats those randomizations and checks the cuisine residual after excluding title-named sweet/drink recipes, the original mixed community 76, and very high-similarity edges. See [`docs/network_residual_sensitivity.md`](docs/network_residual_sensitivity.md) for the results and selection limits.
-
-`docs/recipe_pair_audit.md` records a manual spot check of examples from three selected cross-cuisine pairs, including ambiguous labels and near-duplicate ingredient lists. `docs/recipe_pair_audit_full.csv` contains the reviewed cases, and `docs/recipe_pair_candidates_full.csv` contains the 60 distinct candidate edges considered. These examples are descriptive and should not be read as evidence of culinary influence.
-
-`paper/pnas_network/` contains a draft Results, Discussion, and Materials and Methods contribution for the official PNAS research-article LaTeX template, with vector figures and integration instructions. It can be merged with the team's NLP contribution.
+`docs/course_topics.md` summarises the course topics and how they map onto our research question.
 
 ## Raw data is never committed
 
