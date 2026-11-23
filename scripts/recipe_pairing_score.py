@@ -5,7 +5,8 @@ contain both ingredients comes from Curveball randomizations of the
 recipe-ingredient matrix within each cuisine (each recipe keeps its number of
 ingredients; each ingredient keeps its frequency in that cuisine). A recipe's
 pairing score is the mean log2 ratio between observed and expected
-co-occurrence over its ingredient pairs, with leave-one-out. See
+co-occurrence over its ingredient pairs, with leave-one-out and a pseudocount
+of 5 (columns pairing_score_k2 and pairing_score_k10 are robustness checks). See
 docs/recipe_pairing_score.md.
 
 Run after scripts/recipe_pair_distinctiveness.py:
@@ -29,6 +30,7 @@ from recipe_ingredient_null import curveball, load_matrix  # noqa: E402
 from src.cuisine_distinctiveness import pairing_scores  # noqa: E402
 
 DATA = ROOT / "data" / "processed"
+PSEUDOCOUNT = 5  # see docs/recipe_pairing_score.md
 SHOWCASE = [  # the nine pairs of the report's pair figure
     ("chinese", "green onion", "soy sauce"), ("french", "butter", "flour"),
     ("greek", "feta cheese", "olive oil"), ("indian", "onion", "turmeric"),
@@ -58,11 +60,12 @@ def main() -> None:
     print()
 
     scores, expectation = pairing_scores(
-        recipes.recipe_id, cuisine, [sorted(r) for r in base], randomized, matrix.shape[1])
+        recipes.recipe_id, cuisine, [sorted(r) for r in base], randomized, matrix.shape[1],
+        pseudocounts=(PSEUDOCOUNT, 2, 10))
 
     # Merge into the existing per-recipe scores.
     path = DATA / "network_recipe_distinctiveness_full.csv"
-    existing = pd.read_csv(path).drop(columns=["pairing_score"], errors="ignore")
+    existing = pd.read_csv(path).drop(columns=[c for c in pd.read_csv(path, nrows=0).columns if c.startswith("pairing_score")])
     merged = existing.merge(scores, on="recipe_id", how="left", validate="one_to_one")
     assert len(merged) == len(existing)
     merged.to_csv(path, index=False)
@@ -83,7 +86,7 @@ def main() -> None:
     for c, a, b in zip(sig.cuisine, sig.ingredient_a, sig.ingredient_b):
         o, e = expectation(c, index[a], index[b])
         exp_col.append(e)
-        lift_col.append(np.log2((o + 1) / (e + 1)))
+        lift_col.append(np.log2((o + PSEUDOCOUNT) / (e + PSEUDOCOUNT)))
     sig["expected_in_cuisine"] = exp_col
     sig["pairing_lift"] = lift_col
     sig.to_csv(sig_path, index=False)
@@ -92,6 +95,8 @@ def main() -> None:
     print(f"Scored {merged.pairing_score.notna().sum():,} of {len(merged):,} recipes")
     print("Pearson r with the ingredient score:", round(s.pairing_score.corr(s.ingredient_distinctiveness), 3))
     print("Pearson r with the pair score:      ", round(s.pairing_score.corr(s.pair_distinctiveness), 3))
+    print("Pearson r with k=2 / k=10 versions:  ", round(s.pairing_score.corr(s.pairing_score_k2), 3),
+          round(s.pairing_score.corr(s.pairing_score_k10), 3))
     print("\nShowcase pairs: observed vs. expected (cuisine-stratified Curveball mean)")
     for c, a, b in SHOWCASE:
         i, j = sorted((index[a], index[b]))

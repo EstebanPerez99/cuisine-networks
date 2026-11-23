@@ -99,15 +99,23 @@ def score_recipes(recipe_ids, labels, ingredient_rows, ingredient_names, min_pai
     return pd.DataFrame(result), signatures
 
 
-def pairing_scores(recipe_ids, labels, ingredient_rows, randomized_rows, n_ingredients):
+def pairing_scores(recipe_ids, labels, ingredient_rows, randomized_rows, n_ingredients,
+                   pseudocounts=(5,)):
     """Score how much more often a recipe's ingredient pairs co-occur than chance.
 
     For each cuisine c and pair (i, j), the expected co-occurrence E is the mean
     count over `randomized_rows`: randomized versions of `ingredient_rows` that
     keep every recipe's size and every ingredient's frequency within its
-    cuisine (e.g. Curveball). The pair lift is log2((n_ij + 1) / (E_ij + 1)),
+    cuisine (e.g. Curveball). The pair lift is log2((n_ij + k) / (E_ij + k)),
     positive when the two ingredients are combined more often than their
     popularity predicts. A recipe's score is the mean lift over its pairs.
+
+    The pseudocount k shrinks rare pairs toward 0: with k = 5, "1 recipe vs.
+    0 expected" scores 0.26 instead of 1.0, while common pairs barely move.
+    See docs/recipe_pairing_score.md for the
+    split-half reliability check that motivates it. The first value in
+    `pseudocounts` gives the column `pairing_score`; any others give
+    `pairing_score_k{k}` (used as robustness checks).
 
     Leave-one-out: the scored recipe is removed from the observed count
     (n_ij - 1), and E is rescaled by (n_i - 1)(n_j - 1) / (n_i n_j), because
@@ -133,7 +141,10 @@ def pairing_scores(recipe_ids, labels, ingredient_rows, randomized_rows, n_ingre
         return sparse.csr_matrix((np.ones(len(r), dtype=np.float64), (r, c)),
                                  shape=(len(index), n_ingredients))
 
-    scores = np.full(n, np.nan)
+    pseudocounts = tuple(pseudocounts)
+    if not pseudocounts or min(pseudocounts) <= 0:
+        raise ValueError("Pseudocounts must be positive")
+    scores = {k: np.full(n, np.nan) for k in pseudocounts}
     observed, expected = {}, {}
     for cuisine in sorted(set(labels)):
         index = np.flatnonzero(labels == cuisine)
@@ -158,10 +169,13 @@ def pairing_scores(recipe_ids, labels, ingredient_rows, randomized_rows, n_ingre
             e_ab = np.asarray(exp[a, b]).ravel()
             na, nb = freq[a], freq[b]
             e_ab = e_ab * (na - 1) * (nb - 1) / (na * nb)
-            scores[i] = float(np.mean(np.log2((n_ab + 1) / (e_ab + 1))))
+            for k in pseudocounts:
+                scores[k][i] = float(np.mean(np.log2((n_ab + k) / (e_ab + k))))
 
     def pair_expectation(cuisine, i, j):
         return float(observed[cuisine][i, j]), float(expected[cuisine][i, j])
 
-    result = pd.DataFrame({"recipe_id": np.asarray(recipe_ids), "pairing_score": scores})
+    result = pd.DataFrame({"recipe_id": np.asarray(recipe_ids)})
+    for position, k in enumerate(pseudocounts):
+        result["pairing_score" if position == 0 else f"pairing_score_k{k:g}"] = scores[k]
     return result, pair_expectation

@@ -34,10 +34,13 @@ class DistinctivenessTests(unittest.TestCase):
         # The "randomized" version splits them, so the pair is above chance.
         rows = [[0, 1], [0, 1], [2, 3], [2, 3]]
         randomized = [[[0, 2], [1, 3], [0, 3], [1, 2]]]
-        scores, expectation = pairing_scores([1, 2, 3, 4], ["A"] * 4, rows, randomized, 4)
+        scores, expectation = pairing_scores([1, 2, 3, 4], ["A"] * 4, rows, randomized, 4,
+                                             pseudocounts=(1, 5))
         self.assertEqual(expectation("A", 0, 1), (2.0, 0.0))
         # Leave-one-out: observed 2 - 1 = 1, expected 0 -> log2((1 + 1) / (0 + 1)) = 1
         self.assertAlmostEqual(scores.pairing_score.iloc[0], 1.0)
+        # A larger pseudocount shrinks this rare pair toward 0: log2(6 / 5)
+        self.assertAlmostEqual(scores.pairing_score_k5.iloc[0], math.log2(6 / 5))
 
     def test_pairing_score_rejects_randomizations_that_change_frequencies(self):
         with self.assertRaises(ValueError):

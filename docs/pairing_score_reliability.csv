@@ -1,0 +1,5 @@
+pseudocount,recipes,split_half_r,spearman_brown_full_data
+1,26622,0.7,0.824
+2,26622,0.759,0.863
+5,26622,0.822,0.902
+10,26622,0.856,0.922

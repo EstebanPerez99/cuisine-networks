@@ -138,6 +138,7 @@ Supporting robustness scripts, each with a write-up in `docs/`:
 | `scripts/recipe_ingredient_null.py` | How much cuisine separation remains when ingredient frequencies are preserved? | `docs/recipe_ingredient_null.md` |
 | `scripts/tagged_recipe_null.py` | Same, also preserving dish type. Needs `data/raw/RAW_recipes.csv.zip`. | `docs/tagged_recipe_null.md` |
 | `scripts/recipe_pairing_score.py` | Is each recipe's ingredient combination more frequent than chance? (the *how* score) | `docs/recipe_pairing_score.md` |
+| `scripts/pairing_score_reliability.py` | Is the *how* score stable, or driven by rare pairs? (split-half reliability; chooses the pseudocount) | `docs/recipe_pairing_score.md` |
 | `scripts/pair_cooccurrence_null.py` | Do the showcased pairs co-occur more than their ingredients' frequencies predict? | `docs/pair_cooccurrence_null.md` |
 | `scripts/recipe_type_analysis.py` | Does dish type (dessert, drink, …) explain the cross-cuisine links? | `docs/recipe_type_investigation.md` |
 | `scripts/ingredient_ablation.py` | Which single ingredients drive the network patterns? | `docs/ingredient_ablation.md` |
