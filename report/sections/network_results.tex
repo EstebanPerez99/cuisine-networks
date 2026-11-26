@@ -1,15 +1,14 @@
-% Network findings (G.D.), reorganised around the three-figure plan.
-% DRAFT: lengths will be cut later. Paragraphs marked [SI?] are candidates
-% to shorten to one sentence or move to the supplementary material.
+% Network findings. Story: (1) the cuisine tags mean something, and mostly
+% because of WHAT recipes use; (2) Ahn's pair measure is mostly the
+% single-ingredient measure again; (3) so we score HOW against a null.
+% The longer recipe-projection analyses live in docs/ (not in the paper).
 
-\subsection*{Cuisines leave an ingredient fingerprint}
-We built a bipartite network with 26,727 recipes, 3,877 retained ingredients, and 227,965 recipe--ingredient links. A link means that an ingredient appears in a recipe. Ingredients were more concentrated across cuisine tags than in 199 random shuffles of those tags: the observed normalized entropy was 0.603, versus a shuffled mean of 0.861. Projecting the network onto ingredients joins two ingredients when they appear in the same recipe (271,443 pairs). Fig.~\ref{fig:network} shows the backbone of this projection. TODO (Fig.~1): describe what the drawing shows once it exists.
+\subsection*{Cuisine tags reflect what goes into a recipe}
+We built a bipartite network with 26,727 recipes, 3,877 ingredients, and 227,965 recipe--ingredient links. A link means that an ingredient appears in a recipe. Projecting the network onto ingredients joins two ingredients when they appear in the same recipe (271,443 pairs). Fig.~\ref{fig:network} shows the backbone of this projection. TODO (Fig.~1): describe what the drawing shows once it exists.
 
-% [SI?] Recipe projection and its randomizations.
-We then linked recipes by their shared ingredients, without using cuisine tags to build the links. Of the link weight in this recipe network, 63.0\% joins recipes with the same cuisine tag, compared with 17.1\% when tags are shuffled. Most of this separation comes from which individual ingredients each cuisine uses: when we randomized ingredients while keeping each recipe's length and each ingredient's frequency within its cuisine, the within-cuisine share was already 59.3\% (59.0\% when swaps were also restricted to the same dish type). The observed share exceeded all 49 randomized networks in each comparison, so a smaller part of the separation comes from how ingredients are combined.
+The cuisine tags are written by users, so we first checked that they mean something. We linked recipes by their shared ingredients, without using the tags. Of the link weight in this recipe network, 63.0\% joins recipes with the same tag, compared with 17.1\% when tags are shuffled. Louvain communities \cite{blondel2008fast} found without the tags agree with them (adjusted mutual information 0.37, against 0.00 for shuffled tags): Mexican, Italian and Indian recipes form almost pure communities, and Chinese, Japanese and Thai recipes merge into one. The main exception is a community of 3,062 recipes built on sweet ingredients, with all nine cuisines in it, which is why the pair check below also keeps the dish type fixed.
 
-% [SI?] Mixed community.
-A community found from recipe links without cuisine labels contained 3,062 recipes with a shared sweet-ingredient pattern and accounted for 24.9\% of cross-cuisine link weight, a reminder that desserts connect cuisines through a shared dish type. Removing explicitly named sweet or drink recipes, or near-identical ingredient lists, did not remove the remaining within-cuisine difference.
+Most of this separation comes from \emph{what} each cuisine uses. When we randomized ingredients while keeping each recipe's length and each ingredient's frequency within its cuisine, the within-cuisine share was already 59.3\%. The observed 63.0\% exceeded all 49 randomized networks, so \emph{how} ingredients are combined adds only a few points for whole cuisines. The rest of the paper asks whether it matters for single recipes.
 
 \begin{figure}[tbhp]
 \centering
@@ -21,31 +20,19 @@ is most distinctive, sized by number of recipes.}}
 \label{fig:network}
 \end{figure}
 
-\subsection*{Which pairs are characteristic, and are they combined on purpose?}
-Following the relative-prevalence idea in Ahn et al. \cite{ahn2011flavor}, we measured how much more often each pair appears in one cuisine than, on average, in the other eight. Figure~\ref{fig:pair-distinctiveness}A shows the top pair per cuisine. Green onion and soy sauce appear together in 24.1\% of Chinese-tagged recipes, compared with an average of 2.9\% in the other cuisines, a difference of 21.3 percentage points. Feta cheese and olive oil differ by 20.9 points for Greek-tagged recipes; fish sauce and lime juice differ by 16.0 points for Thai-tagged recipes.
+\subsection*{A distinctive pair is not always combined on purpose}
+Following Ahn et al. \cite{ahn2011flavor}, we measured how much more often each ingredient pair appears in one cuisine than, on average, in the other eight. Green onion and soy sauce appear together in 24.1\% of Chinese recipes, against 2.9\% on average elsewhere. Feta cheese and olive oil are 20.9 percentage points more common in Greek recipes, and fish sauce and lime juice 16.0 points more common in Thai recipes.
 
-A pair can be characteristic of a cuisine simply because both ingredients are common there. To separate \emph{what} from \emph{how}, we compared each displayed pair with 49 randomized networks that keep every recipe's length and every ingredient's frequency within each cuisine and dish type (Fig.~\ref{fig:pair-null}). Seven of the nine pairs appeared together more often than the central 95\% of these networks. Mexican-tagged recipes combined chili powder and cumin 697 times, almost twice the randomized median of 353: the two are combined on purpose. In contrast, Italian-tagged recipes combined olive oil and parmesan cheese 1,277 times, below the randomized median of 1,437. The pair is characteristic of Italian recipes only because each ingredient is; within Italian recipes the two appear together less often than chance predicts. The nine examples were selected after scoring, so these ranges are descriptive checks.
-
-\begin{figure*}[t!]
-\centering
-\includegraphics[width=17.8cm]{figures/pair_distinctiveness.pdf}
-\caption{Ingredient-network measures for the review analysis. (A) The pair with the largest prevalence difference in each cuisine, among pairs present in at least 20 of its recipes. Differences compare the share of recipes containing the pair in that cuisine with the equal-weight mean share in the other eight. (B) Each hexagon groups recipes by their ingredient-only and pair scores; darker hexagons contain more recipes. Recipe scores exclude the scored recipe from its own cuisine frequencies.}
-\label{fig:pair-distinctiveness}
-\end{figure*}
+A pair can be distinctive simply because both ingredients are common in the cuisine. To separate \emph{what} from \emph{how}, we compared the most distinctive pair of each cuisine with 49 randomized networks that keep every recipe's length and every ingredient's frequency within each cuisine and dish type (Fig.~\ref{fig:pairs}A). Seven of the nine pairs appeared together more often than the central 95\% of these networks. Mexican recipes combined chili powder and cumin 697 times, almost twice the randomized median of 353: the two are combined on purpose. In contrast, Italian recipes combined olive oil and parmesan cheese 1,277 times, below the randomized median of 1,437. The pair is distinctive of Italian recipes only because each ingredient is; within Italian recipes the two appear together less often than chance predicts. We chose the nine pairs after scoring, so this is a descriptive check and not a test.
 
 \begin{figure*}[t!]
 \centering
-\includegraphics[width=17.8cm]{figures/pair_cooccurrence_null.pdf}
-\caption{Are characteristic pairs combined more than chance? For the nine pairs of Fig.~\ref{fig:pair-distinctiveness}A, the orange point is the observed number of recipes containing the pair divided by the median over 49 randomized networks (blue point, ratio one). The gray interval is the middle 95\% of randomized counts. Randomization swaps ingredients only between recipes with the same cuisine and dish type, preserving recipe lengths and ingredient frequencies. Points to the right: the ingredients are combined more often than their popularity predicts.}
-\label{fig:pair-null}
+\includegraphics[width=17.8cm]{figures/pairs_and_scores.pdf}
+\caption{What a recipe uses and how it combines it are different measurements. (A) For the most distinctive pair of each cuisine, the number of recipes containing both ingredients divided by the median over 49 randomized networks that keep recipe lengths and ingredient frequencies within each cuisine and dish type. The gray interval is the middle 95\% of the randomized counts; the number next to each pair is its distinctiveness in percentage points. Points to the right of the interval are pairs combined more often than their popularity predicts. (B) Ingredient score against pair score for every recipe; darker hexagons contain more recipes. The two are nearly the same measurement. (C) Ingredient score against pairing score: knowing what a recipe uses says almost nothing about how unusually it combines it.}
+\label{fig:pairs}
 \end{figure*}
-% TODO (length): merge Figs. 2 and 3 into one figure (A: pairs, B: null check).
 
-\subsection*{Three ingredient scores for every recipe}
-We turned these measures into three scores per recipe, one for each version of the question:
-\begin{enumerate}
-\item \emph{What}: the mean distinctiveness of the recipe's single ingredients.
-\item \emph{Which pairs}: the mean distinctiveness of its ingredient pairs.
-\item \emph{How}: the mean $\log_2$ ratio between how often its ingredient pairs co-occur in its cuisine and how often they co-occur in randomized networks that keep every recipe's size and every ingredient's frequency (the pairing score; Methods).
-\end{enumerate}
-We could score 26,622 of the 26,727 recipes; 105 had fewer than two retained ingredients. The first two scores are strongly correlated ($r=0.852$; Fig.~\ref{fig:pair-distinctiveness}B): a recipe with characteristic pairs is almost always a recipe with characteristic ingredients, so the pair score adds little beyond single ingredients. The pairing score is almost independent of both ($r=-0.07$ with the ingredient score, $r=0.06$ with the pair score), so it captures a different property of the recipe. Its highest-scoring pairs are recipe templates: carrot and celery in Italian recipes (the base of a soffritto; 184 recipes against 19 expected), garlic and ginger paste in Indian recipes (76 against 4.0), tequila and triple sec in Mexican recipes (45 against 1.4), and bay leaf and thyme in French recipes (39 against 7.1). Some templates are not specific to the cuisine, such as garlic powder with onion powder, or canned cream soups in Mexican-tagged casseroles. The comparison with reviews will therefore test the pairing score together with the ingredient score, not on its own.
+\subsection*{What and how are two different scores}
+We turned these measures into three scores per recipe. The \emph{ingredient score} is the mean distinctiveness of the recipe's ingredients (\emph{what}). The \emph{pair score} is the mean distinctiveness of its ingredient pairs. The \emph{pairing score} is the mean $\log_2$ ratio between how often its pairs co-occur in its cuisine and how often they co-occur in randomized networks (\emph{how}; Methods). We could score 26,622 of the 26,727 recipes; 105 had fewer than two retained ingredients.
+
+The ingredient and pair scores are strongly correlated ($r=0.85$; Fig.~\ref{fig:pairs}B): a recipe with distinctive pairs is almost always a recipe with distinctive ingredients, so the pair score adds little. The pairing score is almost independent of both ($r=-0.07$ with the ingredient score, Fig.~\ref{fig:pairs}C; $r=0.06$ with the pair score), so it captures a different property of the recipe. Its highest-scoring pairs are recipe templates: carrot and celery in Italian recipes (the base of a soffritto; 184 recipes against 19 expected), garlic and ginger paste in Indian recipes (76 against 4.0), tequila and triple sec in Mexican recipes (45 against 1.4), and bay leaf and thyme in French recipes (39 against 7.1). Some templates are not specific to the cuisine, such as garlic powder with onion powder, or canned cream soups in Mexican casseroles. The comparison with reviews therefore tests the pairing score together with the ingredient score, not on its own.
