@@ -8,6 +8,24 @@ data/processed/*
 !data/processed/reviews_mini.csv
 !data/processed/network_recipe_distinctiveness_full.csv
 !data/processed/network_pair_signatures_full.csv
+!data/processed/authenticity_shareable/
+data/processed/authenticity_shareable/*
+!data/processed/authenticity_shareable/train_100.csv
+!data/processed/authenticity_shareable/test_100.csv
+!data/processed/recipe_word2vec/
+data/processed/recipe_word2vec/*
+!data/processed/recipe_word2vec/neighbors.csv
+!data/processed/recipe_word2vec/gte_single_queries.csv
+!data/processed/recipe_word2vec/dictionary_matched_full_reviews.csv
+!data/processed/recipe_word2vec/shared50_two_tests/
+data/processed/recipe_word2vec/shared50_two_tests/*
+!data/processed/recipe_word2vec/shared50_two_tests/results.csv
+!data/processed/recipe_word2vec/full_review_training100/
+data/processed/recipe_word2vec/full_review_training100/*
+!data/processed/recipe_word2vec/full_review_training100/full_text_reduced_questions/
+data/processed/recipe_word2vec/full_review_training100/full_text_reduced_questions/*
+!data/processed/recipe_word2vec/full_review_training100/full_text_reduced_questions/broad_review_predictions.csv
+!data/processed/recipe_word2vec/full_review_training100/full_text_reduced_questions/giulia_recipe_join.csv
 
 # Python / Jupyter
 .venv/

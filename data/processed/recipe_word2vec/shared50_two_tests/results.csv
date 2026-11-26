@@ -1,0 +1,5 @@
+test,model,correct_positives,false_positives,missed,true_negatives
+test1_50,gte,6,3,4,37
+test1_50,tfidf,0,0,10,40
+test2_50,gte,7,2,5,36
+test2_50,tfidf,0,0,12,38
