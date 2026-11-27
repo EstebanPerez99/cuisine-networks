@@ -4,7 +4,7 @@
 % The longer recipe-projection analyses live in docs/ (not in the paper).
 
 \subsection*{Cuisine tags reflect what goes into a recipe}
-We built a bipartite network with 26,727 recipes, 3,877 ingredients, and 227,965 recipe--ingredient links. A link means that an ingredient appears in a recipe. Projecting the network onto ingredients joins two ingredients when they appear in the same recipe (271,443 pairs). Fig.~\ref{fig:network} shows the backbone of this projection. TODO (Fig.~1): describe what the drawing shows once it exists.
+We built a bipartite network with 26,727 recipes, 3,877 ingredients, and 227,965 recipe--ingredient links. A link means that an ingredient appears in a recipe. Projecting the network onto ingredients joins two ingredients when they appear in the same recipe (271,443 pairs). Fig.~\ref{fig:network} shows the disparity-filtered backbone \cite{serrano2009extracting} of this projection: ingredients cluster into recognizable culinary regions---an East Asian group around soy sauce, fish sauce, lime juice, and mirin; Mexican and Indian spice clusters; and a Mediterranean core around olive oil, parmesan, and feta---connected by shared hubs such as sugar.
 
 The cuisine tags are written by users, so we first checked that they mean something. We linked recipes by their shared ingredients, without using the tags. Of the link weight in this recipe network, 63.0\% joins recipes with the same tag, compared with 17.1\% when tags are shuffled. Louvain communities \cite{blondel2008fast} found without the tags agree with them (adjusted mutual information 0.37, against 0.00 for shuffled tags): Mexican, Italian and Indian recipes form almost pure communities, and Chinese, Japanese and Thai recipes merge into one. The main exception is a community of 3,062 recipes built on sweet ingredients, with all nine cuisines in it, which is why the pair check below also keeps the dish type fixed.
 
@@ -12,11 +12,8 @@ Most of this separation comes from \emph{what} each cuisine uses. When we random
 
 \begin{figure}[tbhp]
 \centering
-\fbox{\parbox[c][5cm][c]{0.9\linewidth}{\centering\sffamily\small
-TODO Fig.~1: backbone of the ingredient co-occurrence network\\
-(disparity filter), nodes coloured by the cuisine where each ingredient\\
-is most distinctive, sized by number of recipes.}}
-\caption{TODO. The ingredient network. Say what is plotted, what it is compared against, and what the reader should see.}
+\includegraphics[width=8.7cm]{figures/ingredient_backbone.pdf}
+\caption{Backbone of the ingredient co-occurrence network. Nodes are the most distinctive ingredients of each cuisine (plus major shared hubs), sized by recipe count and colored by the cuisine where each ingredient is most distinctive. Edges survive the disparity filter \cite{serrano2009extracting} ($\alpha < 0.005$, co-occurring in at least 30 recipes), compared against a uniform-weight null per node. Ingredients group into East Asian, Mexican, Indian, and Mediterranean clusters linked by cross-cuisine staples.}
 \label{fig:network}
 \end{figure}
 

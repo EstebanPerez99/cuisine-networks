@@ -1,21 +1,69 @@
-% Review-language results (M.N.). Planned content:
-%  - how reviewers use "authentic" (concordance; share affirming / negating),
-%    validated on a hand-labelled sample;
-%  - a review-based score per recipe (authentic mentions + sentiment),
-%    controlling for the number of reviews;
-%  - Fig. 3: the three ingredient scores vs. the review score, per cuisine.
-
+% Review-language results (M.N.).
 \subsection*{What reviewers call authentic}
-TODO (NLP): how often and how reviewers use ``authentic''. Recipes with at least one review mentioning it have a median of 9 reviews against 2 for the rest, so the comparison must account for the number of reviews.
+Simple keyword counts give a noisy picture of perceived authenticity. Across all 132,744 cleaned reviews, \emph{authentic*} appears in 1,318 reviews (0.99\%, 913 recipes), \emph{traditional*} in 786 (0.59\%), \emph{original} in 771 (0.58\%), \emph{real} in 2,103 (1.58\%), and \emph{genuine} in 25 (0.02\%). Counting these words directly treats explicit denials (99 reviews contain ``not authentic'' or ``inauthentic''), store-bought ingredient names (``Traditional Ragu sauce''), suggested edits (``more authentic'' occurs 84 times, more than twice as often as ``not authentic'' at 34), and generic praise (``a real hit'') as endorsements.
+
+Our two-stage pipeline separates genuine endorsements from these false positives. Requiring a sentence to pair an expanded Word2Vec authenticity term with a recipe attribute (Table~\ref{tab:w2v_lexicon}) narrows the corpus 18-fold to 7,281 candidate reviews across 4,295 recipes. Applying the four clause-level KWIC rules (Table~\ref{tab:kwic_rules}) to a held-out set of 100 hand-labeled candidate reviews (22 endorsements) raises precision from 36.5\% for naive keyword matching to 84.2\% while retaining 72.7\% recall (Table~\ref{tab:kwic_val}). Dropping Rule~4 (recipe edits) more than doubles false positives (3 to 8, cutting precision to 68.0\%), while adding a broader fifth rule for restaurant and family references (\emph{grandma}, \emph{nonna}, \emph{restaurant}) also lowers precision (78.3\%) because those words often appear without judging authenticity. Across all 7,281 screened reviews, the four-rule classifier identifies 1,518 authenticity endorsements (20.8\%) spanning 1,074 of the 4,295 recipes (25.0\%).
+
+\begin{table}[tbhp]
+\centering
+\caption{Stage-1 Word2Vec vocabulary expansion from the authenticity seeds and six recipe-attribute groups.}
+\label{tab:w2v_lexicon}
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{lrrl}
+Category & Seeds & Added & Example Word2Vec additions \\
+\midrule
+Authenticity & 88 & 10 & \emph{recreate, copycat, authenic} \\
+Dish & 13 & 57 & \emph{bisque, bruschetta, chapati} \\
+Origin & 17 & 37 & \emph{cantonese, arabian, basque} \\
+Ingredient & 10 & 33 & \emph{basmati, bulgur, couscous} \\
+Reference & 5 & 23 & \emph{grandma, aunt, bakery, cafe} \\
+Preparation & 6 & 19 & \emph{broiling, deglazing, marination} \\
+Sensory & 4 & 18 & \emph{aromas, crispness, aftertaste} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[tbhp]
+\centering
+\caption{Stage-2 clause-level KWIC rules applied to the 7,281 screened reviews.}
+\label{tab:kwic_rules}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{llp{4.6cm}}
+Rule & Effect & Matched cues (within a clause) \\
+\midrule
+1. Conformity & Endorse & \emph{authentic*, traditional*, genuine, real thing/deal} \\
+2. Deviation & Block & Negation ($\le 7$ words before cue: \emph{not, lacks, -n't}) \\
+3. Connection & Endorse & \emph{just like, reminds me of, close to the original} \\
+4. Recipe edits & Block & \emph{more authentic, substitute*, instead of, next time} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[tbhp]
+\centering
+\caption{Validation of clause-level KWIC rules on 100 hand-labeled candidate reviews (22 true endorsements).}
+\label{tab:kwic_val}
+\begin{tabular}{lrrrrr}
+Method & TP & FP & FN & Prec. & Rec. \\
+\midrule
+Naive dictionary & 19 & 33 & 3 & 0.365 & 0.864 \\
+3 rules (no edit filter) & 17 & 8 & 5 & 0.680 & 0.773 \\
+\textbf{4 rules (chosen)} & \textbf{16} & \textbf{3} & \textbf{6} & \textbf{0.842} & \textbf{0.727} \\
+5 rules (+ broad ref.) & 18 & 5 & 4 & 0.783 & 0.818 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsection*{Do ingredients predict perceived authenticity?}
-TODO: compare the three ingredient scores with the review score (Fig.~\ref{fig:comparison}). Which of \emph{what}, \emph{which pairs} or \emph{how} predicts it best, and in which cuisines?
+Joining the review labels with the network scores leaves 4,275 recipes with both a screened review and a pairing score (1,070 endorsed, 25.0\%). The three ingredient scores behave very differently (Fig.~\ref{fig:comparison}). Recipes with more distinctive \emph{single ingredients} are not called authentic more often: across within-cuisine quartiles of the ingredient score, the endorsement rate is flat, moving from 25.1\% in Q1 to 25.6\% in Q4 (Fig.~\ref{fig:comparison}A). In contrast, recipes with higher \emph{pairing scores} are endorsed steadily more often, rising from 20.0\% in the lowest quartile (Q1) to 32.6\% in the highest (Q4)---a 12.6 percentage-point climb, and a 1.78-fold increase from the bottom decile (18.3\%) to the top decile (32.6\%).
 
-\begin{figure}[tbhp]
+The same pattern holds within individual cuisines (Fig.~\ref{fig:comparison}B). All nine cuisines show a positive Spearman correlation between pairing score and authenticity endorsement, with five reaching $p < 0.05$ individually: Japanese ($\rho = 0.250$, $p = 0.004$), Greek ($\rho = 0.209$, $p = 0.0001$), Middle Eastern ($\rho = 0.205$, $p = 0.0001$), Thai ($\rho = 0.182$, $p = 0.009$), and Italian ($\rho = 0.110$, $p = 0.0002$). By comparison, the single-ingredient score hovers near zero in every cuisine (from $-0.055$ in Greek to $+0.098$ in Middle Eastern, none significant at $p < 0.05$).
+
+\begin{figure*}[t!]
 \centering
-\fbox{\parbox[c][5cm][c]{0.9\linewidth}{\centering\sffamily\small
-TODO Fig.~3: ingredient scores vs. review-based authenticity,\\
-one panel or colour per cuisine, against a null.}}
-\caption{TODO. The answer to the research question.}
+\includegraphics[width=17.8cm]{figures/authenticity_comparison.pdf}
+\caption{Perceived authenticity tracks how ingredients are combined, not which single ingredients appear. (A) Share of screened recipes ($n = 4{,}275$) endorsed as authentic across within-cuisine quartiles (Q1--Q4) of the pairing score (\emph{how}, orange) and the ingredient score (\emph{what}, gray), with 95\% Wilson confidence intervals and the 25\% corpus mean (dotted line). Endorsement climbs from 20.0\% to 32.6\% with pairing score while staying flat across ingredient score. (B) Per-cuisine Spearman $\rho$ between authenticity endorsement and pairing score (filled orange for $p < 0.05$, open orange otherwise) compared with the ingredient score (gray). All nine cuisines lean positive for pairing score. (C) Observed Spearman $\rho$ against the middle 95\% of 2,000 within-cuisine label shuffles (gray bands; slate dots show null medians) for all three scores, the one-review subset ($n = 3{,}214$), and the independent Pure GTE embedding check (blue diamonds, no KWIC rules). Asterisks denote empirical $p < 0.05$ ($^*$) and $p = 0.0005$ ($^{***}$).}
 \label{fig:comparison}
-\end{figure}
+\end{figure*}
+
+Because the overall rank correlation is modest ($\rho = 0.091$), we tested whether it could arise by chance or from popular recipes accumulating more reviews (Fig.~\ref{fig:comparison}C). Across 2,000 within-cuisine shuffles of the endorsement labels, the single-ingredient score sits inside random noise ($\rho = 0.019$, $z = 0.57$, empirical $p = 0.57$), and Ahn's raw pair score sits just above the null ($\rho = 0.046$, $z = 2.23$, $p = 0.023$). The pairing score sits far outside the null ($\rho = 0.091$, $z = 6.80$, $p = 0.0005$; 0 of 2,000 shuffles exceeded it). Restricting to the 3,214 recipes with exactly one screened review---holding matched review volume strictly constant---preserves the signal ($\rho = 0.071$, $z = 4.77$, $p = 0.0005$). Finally, replacing the KWIC rules with an independent \texttt{gte-small} embedding classifier reproduces the pairing-score link for both binary endorsements ($\rho = 0.071$, $z = 5.47$, $p = 0.0005$) and continuous recipe scores ($\rho = 0.089$, $z = 5.67$, $p = 0.0005$), confirming that the result is not an artifact of our four hand-crafted rules.

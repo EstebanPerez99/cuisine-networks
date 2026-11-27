@@ -1,12 +1,4 @@
-% Network part of the discussion. Only what the network results already
-% support. TODO after the review comparison: open the Discussion with the
-% answer to the question, then keep what is still needed from here.
+% Network part of the discussion.
 The ingredient score describes how distinctive a recipe's ingredients are of its Food.com cuisine tag. It does not tell us whether the dish is culturally authentic. Ahn's measure for pairs looks like a measure of combinations, but in our data it is mostly the single-ingredient measure again: olive oil and parmesan are distinctive of Italian recipes, yet within Italian recipes they occur together less often than their popularity predicts. A statement about how a cuisine combines ingredients needs a reference that keeps ingredient popularity fixed, which is what the pairing score does.
 
 The pairing score has its own limit, which we found by reading its top pairs. It rewards any well-defined combination, not a typical one: a soffritto scores high, and so do the canned cream soups of a casserole. Its null keeps the cuisine but not the dish type, so baking pairs also gain lift. Food.com cuisine tags are supplied by users, and the recipes come from one online community, not from all cooking within any of the nine cultures.
-
-% Notes for the joint discussion (from the earlier draft):
-%  - a review with no mention of authenticity is not a negative judgment;
-%  - compare recipes within cuisines and account for review counts;
-%  - a null result would say these scores do not predict how this audience
-%    uses the word "authentic", nothing broader.
