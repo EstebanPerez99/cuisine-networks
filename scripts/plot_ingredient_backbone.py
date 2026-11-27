@@ -31,6 +31,7 @@ from ingredient_preprocessing import GENERIC_INGREDIENTS, normalize_ingredient
 
 DATA = ROOT / "data/processed"
 CM = 1 / 2.54
+LAYOUT_K = 1.1
 
 # Harmonious, colorblind-conscious 9-cuisine palette
 CUISINE_COLORS = {
@@ -156,19 +157,36 @@ def main() -> None:
     G = G.subgraph(giant).copy()
     print(f"Displayed backbone subgraph: {G.number_of_nodes()} nodes, {G.number_of_edges()} edges")
 
-    # Layout: weighted spring layout with strong cuisine-backbone cohesion
+    # Check for the caption: share of displayed links joining two ingredients of
+    # the same colour, against 2,000 shuffles of the colours over the nodes.
+    node_list = list(G.nodes())
+    cz = np.array([G.nodes[n]["cuisine"] for n in node_list])
+    ix = {n: k for k, n in enumerate(node_list)}
+    eu = np.array([ix[a] for a, _ in G.edges()])
+    ev = np.array([ix[b] for _, b in G.edges()])
+    same_obs = float(np.mean(cz[eu] == cz[ev]))
+    rng = np.random.default_rng(23)
+    same_null = np.array([np.mean((p := rng.permutation(cz))[eu] == p[ev]) for _ in range(2000)])
+    print(f"Same-cuisine share of displayed links: {same_obs:.1%}; shuffled colours mean {same_null.mean():.1%}, max {same_null.max():.1%}")
+
+    # Layout: spring layout on link weights only. Cuisine plays no role in the
+    # positions, so any grouping by colour comes from the links themselves.
     H = nx.Graph()
     for n in G.nodes():
         H.add_node(n)
     for ui, vi, d in G.edges(data=True):
-        same = 1.8 if G.nodes[ui]["cuisine"] == G.nodes[vi]["cuisine"] else 0.45
-        H.add_edge(ui, vi, weight=same * np.log1p(d["weight"]) / 5.0)
+        H.add_edge(ui, vi, weight=np.log1p(d["weight"]) / 5.0)
 
-    pos = nx.spring_layout(H, k=0.45, iterations=350, seed=23, weight="weight")
+    pos = nx.spring_layout(H, k=LAYOUT_K, iterations=500, seed=23, weight="weight")
 
     # Normalize positions into [-1, 1] with comfortable padding
     xy = np.array([pos[n] for n in G.nodes()])
-    xy -= xy.mean(axis=0)
+    xy -= np.median(xy, axis=0)
+    # Radial stretch (monotone, keeps directions and order of distances from the
+    # centre): opens up the dense core so single nodes can be told apart.
+    rad = np.linalg.norm(xy, axis=1)
+    rad_max = rad.max() if rad.max() > 0 else 1.0
+    xy *= (np.power(rad / rad_max, 0.55) / np.where(rad > 0, rad, 1.0))[:, None]
     scale = np.max(np.abs(xy), axis=0)
     xy /= np.where(scale > 0, scale, 1.0)
     pos = {n: xy[k] for k, n in enumerate(G.nodes())}
@@ -180,8 +198,8 @@ def main() -> None:
             "pdf.fonttype": 42,
         }
     )
-    fig = plt.figure(figsize=(8.7 * CM, 7.6 * CM))
-    ax = fig.add_axes([0.015, 0.16, 0.97, 0.825])
+    fig = plt.figure(figsize=(8.7 * CM, 8.6 * CM))
+    ax = fig.add_axes([0.01, 0.13, 0.98, 0.865])
 
     # Draw edges: intra-cuisine slightly darker than cross-cuisine
     edge_weights = np.array([d["weight"] for _, _, d in G.edges(data=True)])
@@ -193,8 +211,8 @@ def main() -> None:
         x1, y1 = pos[vi]
         same = G.nodes[ui]["cuisine"] == G.nodes[vi]["cuisine"]
         col = CUISINE_COLORS[G.nodes[ui]["cuisine"]] if same else "#aebec6"
-        alpha = 0.28 + 0.36 * wn if same else 0.14 + 0.14 * wn
-        lw = 0.35 + 1.05 * wn
+        alpha = 0.30 + 0.36 * wn if same else 0.05 + 0.10 * wn
+        lw = (0.35 + 1.05 * wn) if same else 0.3
         ax.plot([x0, x1], [y0, y1], color=col, alpha=alpha, linewidth=lw, zorder=1)
 
     # Draw nodes
@@ -202,7 +220,7 @@ def main() -> None:
     xs = [pos[n][0] for n in nodes]
     ys = [pos[n][1] for n in nodes]
     counts_arr = np.array([G.nodes[n]["count"] for n in nodes], dtype=float)
-    sizes = 15.0 + 165.0 * (np.sqrt(counts_arr) / np.sqrt(counts_arr.max()))
+    sizes = 8.0 + 80.0 * (np.sqrt(counts_arr) / np.sqrt(counts_arr.max()))
     colors = [CUISINE_COLORS[G.nodes[n]["cuisine"]] for n in nodes]
     ax.scatter(xs, ys, s=sizes, c=colors, edgecolors="white", linewidths=0.55, alpha=0.95, zorder=2)
 
@@ -211,22 +229,22 @@ def main() -> None:
     for c in CUISINE_ORDER:
         cn = [n for n in nodes if G.nodes[n]["cuisine"] == c]
         cn.sort(key=lambda n: G.nodes[n]["dist"] * np.log1p(G.nodes[n]["count"]), reverse=True)
-        label_candidates.extend(cn[:2])
+        label_candidates.extend(cn[:3])
 
     placed = []  # (x, y, half_width)
     halo = [pe.withStroke(linewidth=2.1, foreground="white", alpha=0.94)]
     for n in label_candidates:
         x0, y0 = pos[n]
         lbl = G.nodes[n]["name"]
-        hw = 0.028 * len(lbl) + 0.05
-        if any(abs(x0 - px) < (hw + phw) and abs(y0 - py) < 0.15 for px, py, phw in placed):
+        hw = 0.022 * len(lbl) + 0.04
+        if any(abs(x0 - px) < (hw + phw) and abs(y0 - py) < 0.10 for px, py, phw in placed):
             continue
         placed.append((x0, y0, hw))
         ax.text(
             x0,
-            y0 + 0.045,
+            y0 + 0.04,
             lbl,
-            fontsize=5.5,
+            fontsize=5.6,
             fontweight="bold",
             color="#1f2933",
             ha="center",
@@ -236,7 +254,7 @@ def main() -> None:
         )
 
     ax.set_xlim(-1.14, 1.14)
-    ax.set_ylim(-1.08, 1.16)
+    ax.set_ylim(-1.10, 1.14)
     ax.axis("off")
 
     # Compact 3x3 cuisine legend at bottom
