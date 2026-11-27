@@ -1,0 +1,3 @@
+test,n,obs_rho,null_mean,z_score,empirical_p
+Pure GTE (binary) | Pairing above chance (pairing_score),4275,0.0713,-0.009,5.47,0.0005
+Pure GTE (continuous) | Pairing above chance (pairing_score),4275,0.0889,0.0056,5.67,0.0005

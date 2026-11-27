@@ -18,6 +18,7 @@ data/processed/recipe_word2vec/*
 !data/processed/recipe_word2vec/lexicon.csv
 !data/processed/recipe_word2vec/gte_single_queries.csv
 !data/processed/recipe_word2vec/gte_dictionary_review_vectors.npz
+!data/processed/recipe_word2vec/pure_gte_shuffle_summary.csv
 !data/processed/recipe_word2vec/dictionary_matched_full_reviews.csv
 !data/processed/recipe_word2vec/shared50_two_tests/
 data/processed/recipe_word2vec/shared50_two_tests/*
